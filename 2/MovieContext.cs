@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MySql.EntityFrameworkCore.Extensions;
+
 namespace web_services_l1
 {
     public class MoviesContext : DbContext
