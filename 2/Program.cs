@@ -1,3 +1,6 @@
+var DatabaseConnection=new web_services_l1.MoviesContext();
+DatabaseConnection.Database.EnsureCreated();
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
