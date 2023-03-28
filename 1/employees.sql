@@ -1,0 +1,14 @@
+INSERT INTO employees(name,occupation,hire_date,salary)VALUES('WEGLARZ','DYREKTOR','1968-01-01',1730.00);
+INSERT INTO employees(name,occupation,hire_date,salary)VALUES('BLAZEWICZ','PROFESOR','1973-05-01',1350.00);
+INSERT INTO employees(name,occupation,hire_date,salary)VALUES('SLOWINSKI','PROFESOR','1977-09-01',1070.00);
+INSERT INTO employees(name,occupation,hire_date,salary)VALUES('BRZEZINSKI','PROFESOR','1968-07-01',960.00);
+INSERT INTO employees(name,occupation,hire_date,salary)VALUES('MORZY','PROFESOR','1975-09-15',830.00);
+INSERT INTO employees(name,occupation,hire_date,salary)VALUES('KROLIKOWSKI','ADIUNKT','1977-09-01',645.50);
+INSERT INTO employees(name,occupation,hire_date,salary)VALUES('KOSZLAJDA','ADIUNKT','1985-03-01',590.00);
+INSERT INTO employees(name,occupation,hire_date,salary)VALUES('JEZIERSKI','ASYSTENT','1992-10-01',439.70);
+INSERT INTO employees(name,occupation,hire_date,salary)VALUES('MATYSIAK','ASYSTENT','1993-09-01',371.00);
+INSERT INTO employees(name,occupation,hire_date,salary)VALUES('MAREK','SEKRETARKA','1985-02-20',410.20);
+INSERT INTO employees(name,occupation,hire_date,salary)VALUES('ZAKRZEWICZ','STAZYSTA','1994-07-15',208.00);
+INSERT INTO employees(name,occupation,hire_date,salary)VALUES('BIALY','STAZYSTA','1993-10-15',250.00);
+INSERT INTO employees(name,occupation,hire_date,salary)VALUES('KONOPKA','ASYSTENT','1993-10-01',480.00);
+INSERT INTO employees(name,occupation,hire_date,salary)VALUES('HAPKE','ASYSTENT','1992-09-01',480.00);
