@@ -25,7 +25,7 @@ public class MoviesController : ControllerBase
             }
             var tokens = line.Split(",");
             if(tokens.Length!=3)
-            continue;
+                continue;
             string MovieID = tokens[0];
             string MovieName = tokens[1];
             string[] Genres = tokens[2].Split("|");
