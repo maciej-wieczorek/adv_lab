@@ -28,6 +28,7 @@ namespace web_services_l1
             {
                 entity.HasKey(e=>e.GenreID);
                 entity.Property(e=>e.Name).IsRequired();
+                entity.HasIndex(e=>e.Name).IsUnique();
             });
             modelBuilder.Entity<User>(entity=>
             {

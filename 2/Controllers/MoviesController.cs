@@ -16,6 +16,8 @@ public class MoviesController : ControllerBase
         MoviesContext dbContext = new MoviesContext();
 
         bool skip_header = true;
+        List<Genre> genres = new List<Genre>();
+        List<Movie> movies = new List<Movie>();
         foreach(string line in fileContent.Split('\n'))
         {
             if(skip_header)
@@ -23,36 +25,113 @@ public class MoviesController : ControllerBase
                 skip_header = false;
                 continue;
             }
-            var tokens = line.Split(",");
+            var tokens = line.Trim().Split(",");
             if(tokens.Length!=3)
                 continue;
-            string MovieID = tokens[0];
+            int MovieID = int.Parse(tokens[0]);
             string MovieName = tokens[1];
-            string[] Genres = tokens[2].Split("|");
+            string[] GenresSplit = tokens[2].Split("|");
             List<Genre> movieGenres = new List<Genre>();
-            foreach(string genre in Genres)
+            foreach(string genre in GenresSplit)
             {
-                Genre g = new Genre();
-                g.Name = genre;
-                if(!dbContext.Genres.Any(e => e.Name == g.Name))
+                Genre? g = genres.Find(g => g.Name == genre);
+                if (g == null)
                 {
-                    dbContext.Genres.Add(g);
-                    dbContext.SaveChanges();
+                    g = new Genre();
+                    g.Name = genre;
+                    g.GenreID = genres.Count() + 1;
+
+                    genres.Add(g);
                 }
-                IQueryable<Genre> results = dbContext.Genres.Where(e => e.Name == g.Name);
-                if(results.Count()>0)
-                    movieGenres.Add(results.First());
+                movieGenres.Add(g);
             }
-            Movie m = new Movie();
-            m.MovieID = int.Parse(MovieID);
-            m.Title = MovieName;
-            m.Genres = movieGenres;
-            if(!dbContext.Movies.Any(e => e.MovieID == m.MovieID))
-                dbContext.Movies.Add(m);
-            dbContext.SaveChanges();
+
+            if (movies.Find(e => e.MovieID == MovieID) == null)
+            {
+                Movie m = new Movie();
+                m.MovieID = MovieID;
+                m.Title = MovieName;
+                m.Genres = movieGenres;
+
+                movies.Add(m);
+            }
         }
 
+        foreach (Genre genre in genres)
+        {
+            dbContext.Genres.Add(genre);
+        }
         dbContext.SaveChanges();
+
+        foreach (Movie movie in movies)
+        {
+            dbContext.Movies.Add(movie);
+        }
+        dbContext.SaveChanges();
+
+        return"OK";
+    }
+
+    [HttpPost("UploadRatingCsv")]
+    public string UploadRatingCsv(IFormFile inputFile)
+    {
+        var strm = inputFile.OpenReadStream();
+        byte[] buffer = new byte[inputFile.Length];
+        strm.Read(buffer, 0, (int)inputFile.Length);
+        string fileContent = System.Text.Encoding.Default.GetString(buffer);
+        strm.Close();
+
+        MoviesContext dbContext = new MoviesContext();
+
+        bool skip_header = true;
+        List<User> users = new List<User>();
+        List<Rating> ratings = new List<Rating>();
+        List<Movie> movies = dbContext.Movies.AsEnumerable().ToList();
+        foreach(string line in fileContent.Split('\n'))
+        {
+            if(skip_header)
+            {
+                skip_header = false;
+                continue;
+            }
+            var tokens = line.Trim().Split(",");
+            if(tokens.Length!=4)
+                continue;
+            int UserID = int.Parse(tokens[0]);
+            int MovieID = int.Parse(tokens[1]);
+            int Rating =  (int)(float.Parse(tokens[2]) * 2.0f);
+
+            User? user = users.Find(u => u.UserID == UserID);
+            if (user == null)
+            {
+                user = new User();
+                user.UserID = UserID;
+                users.Add(user);
+            }
+
+            Movie? movie = movies.Find(m => m.MovieID == MovieID);
+
+            Rating r = new Rating();
+            r.RatingID = ratings.Count() + 1;
+            r.RatingValue = Rating;
+            r.RatingUser = user;
+            r.RatedMovie = movie;
+
+            ratings.Add(r);
+        }
+
+        foreach (User user in users)
+        {
+            dbContext.Users.Add(user);
+        }
+        dbContext.SaveChanges();
+
+        foreach (Rating rating in ratings)
+        {
+            dbContext.Ratings.Add(rating);
+        }
+        dbContext.SaveChanges();
+
         return"OK";
     }
 
