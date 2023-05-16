@@ -5,9 +5,11 @@ from django.shortcuts import get_object_or_404, redirect
 from django.views import generic
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
-from .models import Movie, Genre
-from .forms import NewUserForm
+from .models import Movie, Genre, Rating
+from .forms import NewUserForm, RatingForm
+
 
 
 def index(request: HttpRequest):
@@ -55,6 +57,67 @@ class GenreView(generic.DetailView):
     model = Genre
     template_name = 'userview/genre_detail.html'
 
+class IndexView(generic.ListView):
+    paginate_by = 2
+    template_name = 'userview/movies_list.html'
+    context_object_name = 'movies'
+    def get_queryset(self):
+        return Movie.objects.order_by('-title')
+    
+class RatedMoviesView(LoginRequiredMixin, generic.ListView):
+    model = Movie
+    template_name = 'userview/rated_movies_list.html'
+    context_object_name = 'movies'
+    paginate_by = 2
+
+    def get_queryset(self):
+        user = self.request.user
+        ratings = Rating.objects.filter(user=user)
+        movie_ids = ratings.values_list('movie_id', flat=True)
+        queryset = Movie.objects.filter(id__in=movie_ids)
+        return queryset
+    
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect("/")
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        for movie in context['movies']:
+            movie.rating = Rating.objects.get(movie=movie, user=self.request.user)
+        return context
+    
+def rating_add(request, movie_id):
+    if request.user.is_authenticated:
+        movie = get_object_or_404(Movie, id=movie_id)
+        if request.method == 'POST':
+            form = RatingForm(request.POST)
+            if form.is_valid():
+                rating_value = form.cleaned_data['value']
+                user = request.user
+                rating, created = Rating.objects.get_or_create(movie=movie, user=user, defaults={'value': rating_value})
+                if not created:
+                    rating.value = rating_value
+                    rating.save()
+                messages.success(request, f'Your rating for {movie.title} has been saved.')
+                return redirect('rated')
+        else:
+            form = RatingForm()
+        return render(request, 'userview/rating_add.html', {'form': form, 'movie': movie})
+    else:
+        return redirect("login")
+    
+def rating_delete(request, rating_id):
+    if request.user.is_authenticated:
+        rating = get_object_or_404(Rating, id=rating_id, user=request.user)
+        movie = rating.movie
+        rating.delete()
+        messages.success(request, f'Your rating for {movie.title} has been deleted.')
+        return redirect('rated')
+    else:
+        return redirect('login')
+
 def register_request(request):
     if request.method == "POST":
         form = NewUserForm(request.POST)
@@ -72,7 +135,6 @@ def register_request(request):
 def login_request(request):
     if request.method == "POST":
         form = AuthenticationForm(request, request.POST)
-        print(form)
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
@@ -89,4 +151,11 @@ def login_request(request):
     form = AuthenticationForm()
     return render(request=request,template_name="userview/login.html",
                                    context={"login_form":form})
+
+
+def logout_request(request):
+    if not request.user.is_anonymous:
+        logout(request)
+        messages.success(request, "Logout successful.")
+    return redirect("/")
 
