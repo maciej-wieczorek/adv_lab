@@ -1,9 +1,13 @@
 from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse
 from django.template import loader
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.views import generic
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib import messages
 from .models import Movie, Genre
+from .forms import NewUserForm
 
 
 def index(request: HttpRequest):
@@ -50,3 +54,39 @@ class MovieView(generic.DetailView):
 class GenreView(generic.DetailView):
     model = Genre
     template_name = 'userview/genre_detail.html'
+
+def register_request(request):
+    if request.method == "POST":
+        form = NewUserForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, "Registration successful.")
+            return redirect("/")
+        messages.error(request, "Unsuccessful registration. Invalid information.")
+    
+    form = NewUserForm()
+    return render(request=request,template_name="userview/register.html",
+                                   context={"register_form":form})
+
+def login_request(request):
+    if request.method == "POST":
+        form = AuthenticationForm(request, request.POST)
+        print(form)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+
+            user = authenticate(username=username,password=password)
+            if user is not None:
+                login(request,user)
+                messages.success(request, "Login successful.")
+                return redirect("/")
+            else:
+                messages.error(request, "Unsuccessful login. User does not exist")
+        messages.error(request, "Unsuccessful login. Invalid information.")
+    
+    form = AuthenticationForm()
+    return render(request=request,template_name="userview/login.html",
+                                   context={"login_form":form})
+

@@ -37,8 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'userview.apps.UserviewConfig'
+    'userview.apps.UserviewConfig',
+    'crispy_forms',
+    'crispy_bootstrap5'
 ]
+
+CRISPY_TEMPLATE_PACK='bootstrap5'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -78,8 +82,7 @@ DATABASES = {
     'default': {
         'ENGINE':'django.db.backends.mysql',
         'NAME':'userview',
-        'USER':'username',
-        'PASSWORD':'password'
+        'USER':'root'
     }
 }
 
