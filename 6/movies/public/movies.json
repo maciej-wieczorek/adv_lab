@@ -1,0 +1,19 @@
+{
+    "movies": [
+      {
+        "id": "1",
+        "title": "Jaws",
+        "description": "When a killer shark unleashes chaos on a beach community off Cape Cod, it's up to a local sheriff, a marine biologist, and an old seafarer to hunt the beast down.",
+        "image": "https://cdn.shopify.com/s/files/1/0057/3728/3618/products/d3a38cf25552ce4dd7502f83464d91e3_8d963fcc-98d4-4078-b799-35c2fd25475a_480x.progressive.jpg?",
+        "rating": "4"
+      },
+      {
+        "id": "2",
+        "title": "Goodfellas",
+        "description": "The story of Henry Hill and his life in the mafia, covering his relationship with his wife Karen and his mob partners Jimmy Conway and Tommy DeVito.",
+        "image": "https://cdn.shopify.com/s/files/1/0057/3728/3618/products/3200a1052cc853f37c2b6cb7989c55f8_83cab358-88d3-4e5a-99ca-2492e8438070_480x.progressive.jpg",
+        "rating": "5"
+      }
+    ]
+}
+  
