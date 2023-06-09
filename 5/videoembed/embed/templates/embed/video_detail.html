@@ -1,0 +1,15 @@
+{% extends "embed/base.html" %}
+
+{% load embed_video_tags %}
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">{{ object.title }}</h1>
+
+    {% video object.video as this_video %}
+        {% video this_video "small" %}
+    {% endvideo %}
+
+    <h3>Description:</h3>
+    <p>{{ object.description }}</p>
+</div>
+{% endblock %}
